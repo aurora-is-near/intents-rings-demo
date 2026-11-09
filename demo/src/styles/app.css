@@ -1,0 +1,240 @@
+/* Demo prototype runbook. One column, numbered steps, top-down.
+   Layout + component shapes only — every colour and type value resolves to a
+   token in aurora-intents.css, which was read off the live intents.aurora.dev.
+
+   Previously this file referenced --text-1, --text-2 and --green-tint /
+   --amber-tint / --red-tint / --lime-tint, none of which were ever defined in
+   the dark token set. Body text was falling back to the browser default black,
+   which only looked correct because the page was pinned to a white theme. */
+
+* { box-sizing: border-box; }
+
+.page {
+  max-width: 820px;          /* narrower than the site's 1140px: this is a
+                                single-column runbook, not a landing page */
+  margin: 0 auto;
+  padding: var(--sp-10) var(--sp-6) var(--sp-20);
+}
+
+/* ---------- top bar ---------- */
+.topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--sp-4); padding-bottom: var(--sp-5);
+  border-bottom: 1px solid var(--line);
+}
+/* The lockup, reproduced from the live site's own header: a 21px mark in ink,
+   9px to the wordmark group, 7px between the AURORA wordmark and "Intents",
+   both of which sit in --ink-2 at weight 500. */
+.brand {
+  display: flex; align-items: center; gap: 9px;
+  color: var(--ink); text-decoration: none;
+}
+.logoMark { width: 21px; height: 21px; display: block; flex: none; }
+.brandWm { display: flex; align-items: center; gap: 7px; color: var(--ink-2); }
+/* viewBox 1175x188 — 6.25:1, so 15px tall is 93.75px wide, as on the site. */
+.logoWordmark { height: 15px; width: 93.75px; display: block; flex: none; }
+.brandName { font-size: 18px; font-weight: 500; letter-spacing: -0.03em; line-height: 1; }
+
+@media (max-width: 420px) {
+  /* The wordmark is the first thing to go; the mark alone still reads. */
+  .logoWordmark { display: none; }
+  .brandWm { gap: 0; }
+}
+
+/* ---------- context header ---------- */
+.intro { padding: var(--sp-10) 0 var(--sp-8); }
+.intro h1 { font-size: 34px; line-height: 1.1; letter-spacing: -0.04em; margin: var(--sp-4) 0 var(--sp-5); }
+.intro p { margin: 0 0 var(--sp-4); max-width: 64ch; font-size: 17px; line-height: 1.6; color: var(--ink-2); }
+
+/* ---------- steps ---------- */
+.steps { display: flex; flex-direction: column; }
+
+.step {
+  display: grid;
+  grid-template-columns: 34px 1fr;
+  column-gap: var(--sp-5);
+  padding: var(--sp-6) 0;
+  border-top: 1px solid var(--line);
+}
+
+/* The rail: number in a ring, with a connector line running down. */
+.rail { position: relative; display: flex; justify-content: center; }
+.rail::after {
+  content: ''; position: absolute; top: 34px; bottom: calc(var(--sp-6) * -1 - 1px);
+  width: 1px; background: var(--line);
+}
+.step:last-of-type .rail::after { display: none; }
+
+.num {
+  position: relative; z-index: 1;
+  width: 34px; height: 34px; border-radius: 999px;
+  display: grid; place-items: center;
+  font-family: var(--fm);
+  font-size: 12px; font-weight: 500; font-variant-numeric: tabular-nums;
+  background: var(--paper); border: 1px solid var(--line-2); color: var(--ink-3);
+}
+/* The active step is the page's single bright spot. */
+.step[data-state='active'] .num { background: var(--lime); border-color: transparent; color: var(--lime-ink); font-weight: 500; }
+.step[data-state='done'] .num   { background: var(--ok-tint); border-color: transparent; color: var(--ok); }
+
+.stepHead { display: flex; align-items: baseline; gap: var(--sp-3); flex-wrap: wrap; }
+.stepTitle { font-size: 19px; font-weight: 800; letter-spacing: -0.025em; color: var(--ink); margin: 3px 0 0; }
+.stepBody { margin-top: var(--sp-4); }
+.stepBody > * + * { margin-top: var(--sp-4); }
+
+/* "Do this" vs "Look at this" — the two things a tester needs per step. */
+.doNow, .watch {
+  display: grid; grid-template-columns: auto 1fr; gap: var(--sp-3);
+  font-size: 15px; line-height: 1.55;
+}
+.doNow { color: var(--ink); }
+.watch { color: var(--ink-2); }
+.tag {
+  font-family: var(--fm);
+  font-size: 10px; font-weight: 400; letter-spacing: 0.14em; text-transform: uppercase;
+  padding: 3px 8px; border-radius: var(--r-sm); white-space: nowrap; height: fit-content;
+  margin-top: 3px;
+}
+.tag--do    { background: var(--lime-tint); color: var(--ink); }
+.tag--watch { background: var(--paper); border: 1px solid var(--line-2); color: var(--ink-2); }
+
+/* Idle steps are de-emphasised, never inert: a step that is merely "not your
+   turn yet" must still be clickable, since the registry check (step 2) does not
+   depend on a connected wallet. Controls with real prerequisites carry their
+   own `disabled`. */
+.step[data-state='idle'] .stepBody { opacity: 0.6; transition: opacity 200ms ease; }
+.step[data-state='idle']:hover .stepBody,
+.step[data-state='idle']:focus-within .stepBody { opacity: 1; }
+
+/* ---------- readouts ---------- */
+.readout {
+  background: var(--inset); border: 1px solid var(--line);
+  border-radius: var(--r-card); padding: var(--sp-5);
+}
+.kv { display: flex; justify-content: space-between; align-items: baseline; gap: var(--sp-4); padding: 7px 0; }
+.kv + .kv { border-top: 1px solid var(--line); }
+.kv > span:first-child {
+  font-family: var(--fm); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--ink-2); white-space: nowrap;
+}
+.addr { font-family: var(--fm); font-size: 12px; color: var(--ink); word-break: break-all; text-align: right; }
+
+.row { display: flex; align-items: center; gap: var(--sp-3); flex-wrap: wrap; }
+.hint { font-size: 14px; color: var(--ink-2); margin: 0; }
+.err { font-size: 14px; color: var(--bad); margin: 0; }
+.mono { font-family: var(--fm); font-size: 12px; }
+.muted { color: var(--ink-2); }
+.timer { font-family: var(--fm); font-variant-numeric: tabular-nums; font-size: 13px; color: var(--ink-3); }
+
+.field {
+  width: 100%; padding: 12px 14px; font-size: 14px;
+  font-family: var(--fm);
+  background: var(--paper); color: var(--ink);
+  border: 1px solid var(--line-2); border-radius: var(--r-btn);
+  transition: border-color 200ms ease;
+}
+.field::placeholder { color: var(--ink-3); }
+.field:focus { outline: none; border-color: var(--ink); }
+
+/* ---------- buttons ----------
+   Flat fills, radius 11px, weight 700 — as measured on the live site's
+   "Open App" and "Get an API key now →". No gradients, no shadows. */
+.btn-primary, .connectCta {
+  font-family: var(--fh); font-size: 15px; font-weight: 700; cursor: pointer;
+  padding: 12px 22px; border-radius: var(--r-btn); border: 1px solid transparent;
+  transition: opacity 200ms ease, transform 200ms ease;
+}
+.btn-primary { background: var(--lime); color: var(--lime-ink); }
+.btn-primary:hover:not(:disabled) { opacity: 0.9; transform: translateY(-1px); }
+.btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+.connectCta { background: var(--ink); color: var(--paper); }
+.connectCta:hover { opacity: 0.88; transform: translateY(-1px); }
+
+.actions { display: flex; align-items: center; gap: var(--sp-3); flex-wrap: wrap; }
+
+.btn-ghost {
+  font-family: var(--fh); font-size: 14px; font-weight: 600; cursor: pointer;
+  padding: 9px 15px; border-radius: var(--r-btn);
+  background: var(--paper); color: var(--ink);
+  border: 1px solid var(--line-2);
+  transition: background 200ms ease;
+}
+.btn-ghost:hover:not(:disabled) { background: var(--inset); border-color: var(--ink-3); }
+.btn-ghost:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-ghost--sm { padding: 2px 8px; font-size: 11px; font-weight: 500; vertical-align: middle; }
+
+.exampleRow { display: flex; flex-direction: column; gap: var(--sp-2); margin-top: var(--sp-3); }
+.example {
+  font-family: var(--fm); font-size: 12px; cursor: pointer; text-align: left;
+  padding: 9px 12px; border-radius: var(--r-btn);
+  background: var(--inset); border: 1px dashed var(--line-2); color: var(--ink);
+  word-break: break-all;
+  transition: background 200ms ease, border-color 200ms ease;
+}
+.example:hover { background: var(--paper); border-style: solid; border-color: var(--ink); }
+
+.walletChip {
+  font-family: var(--fm); font-size: 12px; cursor: pointer;
+  display: inline-flex; align-items: center; gap: var(--sp-2);
+  padding: 8px 14px; border-radius: 999px;
+  background: var(--paper); border: 1px solid var(--line-2); color: var(--ink);
+}
+.dot { width: 7px; height: 7px; border-radius: 999px; background: var(--ok); }
+.linkBtn {
+  font: inherit; font-size: 14px; cursor: pointer; background: none; border: none;
+  color: var(--ink-2); text-decoration: underline; text-underline-offset: 2px; padding: 0;
+}
+
+/* ---------- chips ----------
+   Status always carries a word, never colour alone. */
+.chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--fm); font-size: 11px; font-weight: 400; letter-spacing: 0.06em;
+  padding: 4px 10px; border-radius: 999px;
+  background: var(--inset); border: 1px solid var(--line); color: var(--ink-2);
+}
+.chip--green { background: var(--ok-tint);   border-color: transparent; color: var(--ok); }
+.chip--amber { background: var(--warn-tint); border-color: transparent; color: var(--warn); }
+.chip--fail  { background: var(--bad-tint);  border-color: transparent; color: var(--bad); }
+.chip--lime  { background: var(--lime-tint); border-color: transparent; color: var(--ink); }
+
+/* ---------- visibility table ---------- */
+.vis { width: 100%; border-collapse: collapse; font-size: 14px; }
+.vis th {
+  text-align: left; font-family: var(--fm); font-weight: 400;
+  font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-2);
+  padding: 0 var(--sp-4) var(--sp-3) 0; border-bottom: 1px solid var(--line-2);
+}
+.vis td { padding: var(--sp-3) var(--sp-4) var(--sp-3) 0; border-bottom: 1px solid var(--line); vertical-align: top; color: var(--ink-2); }
+.vis tr > *:last-child { padding-right: 0; }
+
+.footerNote {
+  font-size: 14px; color: var(--ink-2); margin: var(--sp-12) 0 0;
+  padding-top: var(--sp-6); border-top: 1px solid var(--line);
+}
+.footerNote a { color: var(--ink); }
+
+@media (max-width: 560px) {
+  .page { padding: var(--sp-6) var(--sp-4) var(--sp-12); }
+  .intro h1 { font-size: 27px; }
+  .step { grid-template-columns: 28px 1fr; column-gap: var(--sp-4); }
+  .num { width: 28px; height: 28px; font-size: 11px; }
+  .rail::after { top: 28px; }
+  .addr { text-align: left; }
+  .kv { flex-direction: column; gap: 2px; }
+  /* Stacked on narrow screens; the tag must not stretch to the full column. */
+  .doNow, .watch { grid-template-columns: 1fr; gap: var(--sp-2); }
+  .tag { justify-self: start; margin-top: 0; }
+}
+
+/* ---------- a note on --ink-3 -----------------------------------------
+   The live site sets every mono label in --ink-3 (#878b94), which is
+   3.41:1 on white — below AA for small text. That is tolerable for the
+   site's decorative section kickers ("WHY NOW", "TRUSTED BY"), and `.lab`
+   keeps it so the page reads as the same family.
+
+   It is NOT tolerable for labels a tester has to act on. The DO / LOOK AT
+   tags, the key column of every readout and the visibility table headers
+   all carry instructions, so those are set in --ink-2 (#565a63, 6.91:1).
+   Decorative stays on-brand; functional stays legible.
+   --------------------------------------------------------------------- */

@@ -1,0 +1,22 @@
+{
+  "name": "aurora-rings-harness",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Tier 1 measurement harness: Aurora Intents (Base -> Solana) x Helius Rings confidential delivery",
+  "scripts": {
+    "preflight": "tsx src/preflight.ts",
+    "registry": "tsx src/registry.ts",
+    "probe:memo": "tsx src/probes/memo.ts",
+    "run": "tsx src/run.ts"
+  },
+  "dependencies": {
+    "@heliuslabs/zolana": "^0.7.0-alpha",
+    "@solana/kit": "^8.5.0",
+    "viem": "^2.21.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0"
+  }
+}

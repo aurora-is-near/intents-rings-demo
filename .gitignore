@@ -1,0 +1,18 @@
+# Secrets. Both .env files hold the Aurora API key; only .env.example is tracked.
+.env
+.env.local
+*.key
+
+node_modules/
+dist/
+out/
+build/
+.next/
+*.tsbuildinfo
+.DS_Store
+
+# Machine-local Claude Code permissions, not project config.
+.claude/settings.local.json
+
+# A separate, unrelated project that happens to share this parent folder.
+hyperliquid-deposit-demo/

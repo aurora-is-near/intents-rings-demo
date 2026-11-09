@@ -1,0 +1,127 @@
+/* ───────────────────────────────────────────────────────────────────────
+   Aurora Intents theme — read off the live site, intents.aurora.dev,
+   on 2026-11-04 (computed styles + :root custom properties).
+
+   This REPLACES tokens.css / bundle.css / light-fixes.css, which came from
+   the Oct 2026 `intents-connect-landing` export. That export has since gone
+   stale: it ships a dark graphite canvas (#1d1e24) and Inter, while the live
+   site is light (#ffffff), uses Onest for all type and JetBrains Mono for
+   labels, and carries a different accent set.
+
+   Verbatim from the live site's :root:
+     --paper #fff   --card #fff   --ink #15171c   --ink-2 #565a63
+     --ink-3 #878b94  --line #15171c1a  --line-2 #15171c29
+     --lime #ceec98  --night #14161b
+     --cyan #5ab9e1  --emerald #46c8a5  --indigo #828ecd
+     --warm #e9b492  --red #e0785f
+     --fh Onest  --fm JetBrains Mono  --maxw 1140px
+   ─────────────────────────────────────────────────────────────────────── */
+
+@import url('https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  /* --- surfaces, verbatim --- */
+  --paper: #ffffff;
+  --card: #ffffff;
+  --night: #14161b;
+
+  /* The site has no neutral grey step; panels are white-on-white separated by
+     hairlines. One very faint fill is added for inset readouts, derived from
+     ink rather than invented. */
+  --inset: #fafafb;
+
+  --ink: #15171c;
+  --ink-2: #565a63;
+  --ink-3: #878b94;
+
+  --line: rgba(21, 23, 28, 0.10);
+  --line-2: rgba(21, 23, 28, 0.16);
+
+  --lime: #ceec98;
+  --lime-ink: #14161b;
+
+  /* --- accents, verbatim: fills and large blocks only --- */
+  --cyan: #5ab9e1;
+  --emerald: #46c8a5;
+  --indigo: #828ecd;
+  --warm: #e9b492;
+  --red: #e0785f;
+
+  /* Pale washes the site uses for its colorBlock panels, verbatim. */
+  --wash-emerald: #e4f4ec;
+  --wash-cyan: #e7f3fb;
+  --wash-indigo: #ecedf7;
+  --wash-warm: #fbeee6;
+
+  /* --- status TEXT: the accents above, darkened on-hue --------------------
+     The live accents are fill colours and fail AA as text: emerald 2.09:1 on
+     white, red 2.99:1, warm 1.84:1. Status text here sits on a 12% tint of
+     its own hue, so each value below clears 4.5:1 on white AND on that tint:
+       emerald #247862  white 5.33  tint 4.54
+       red     #bb4124  white 5.39  tint 4.53
+       warm    #a65522  white 5.32  tint 4.53
+       cyan    #1c7398  white 5.31  tint 4.51
+     Hues are preserved; only lightness moves. ------------------------------ */
+  --ok: #247862;
+  --warn: #a65522;
+  --bad: #bb4124;
+  --info: #1c7398;
+
+  --ok-tint: rgba(36, 120, 98, 0.12);
+  --warn-tint: rgba(166, 85, 34, 0.12);
+  --bad-tint: rgba(187, 65, 36, 0.12);
+  --info-tint: rgba(28, 115, 152, 0.12);
+  --lime-tint: rgba(206, 236, 152, 0.45);
+
+  --fh: 'Onest', system-ui, -apple-system, sans-serif;
+  --fm: 'JetBrains Mono', ui-monospace, Menlo, monospace;
+
+  --maxw: 1140px;
+
+  /* 4px grid */
+  --sp-1: 4px;  --sp-2: 8px;  --sp-3: 12px; --sp-4: 16px;
+  --sp-5: 20px; --sp-6: 24px; --sp-8: 32px; --sp-10: 40px;
+  --sp-12: 48px; --sp-16: 64px; --sp-20: 80px;
+
+  /* Radii as measured: 11px buttons, 18px cards, 24-26px large panels. */
+  --r-sm: 8px;
+  --r-btn: 11px;
+  --r-card: 18px;
+  --r-panel: 24px;
+}
+
+/* ---------- base type, as measured ---------- */
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  font-family: var(--fh);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--ink-2);
+  background: var(--paper);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 { color: var(--ink); margin: 0; font-weight: 800; }
+h1 { font-size: 42px; line-height: 1.08; letter-spacing: -0.045em; }
+h2 { font-size: 30px; line-height: 1.12; letter-spacing: -0.035em; }
+h3 { font-size: 24px; line-height: 1.2;  letter-spacing: -0.03em; }
+h4 { font-size: 17px; line-height: 1.3;  letter-spacing: -0.02em; font-weight: 700; }
+
+a { color: var(--ink); text-decoration-color: var(--line-2); text-underline-offset: 2px; }
+
+/* ---------- the section label ----------------------------------------
+   The site's one repeating signature: a mono, uppercase, wide-tracked
+   label above each section (`.lab` / `.ht-lab` on the live site —
+   JetBrains Mono 12px/400, 0.14em, in --ink-3). Note it is NOT lime, and
+   NOT bold. Lime is reserved for button fills.
+   -------------------------------------------------------------------- */
+.lab {
+  font-family: var(--fm);
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin: 0;
+}
